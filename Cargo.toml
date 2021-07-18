@@ -1,6 +1,6 @@
 [package]
 name = "biodome"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2018"
 description = "Reading and parsing env vars with defaults and structured types"
 homepage = "https://github.com/cjrh/biodome-rs"

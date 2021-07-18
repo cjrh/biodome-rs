@@ -21,4 +21,4 @@ include = [
 toml = "0.5.8"
 
 [dev-dependencies]
-uuid = { version = "*", features = ["v4"] }
+uuid = { version = "0.8", features = ["v4"] }

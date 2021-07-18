@@ -1,17 +1,19 @@
+use std::collections::HashMap;
 use std::fmt::Debug;
 use std::str::FromStr;
 use std::vec::Vec;
 use toml::value::Datetime;
 
 pub fn to_prim<T: FromStr>(s: &str) -> Result<T, &'static str> {
-    s.parse().map_err(|err| "parse error")
+    s.parse().map_err(|_err| "parse error")
 }
 
 pub fn to_bool(s: &str) -> bool {
     const TRUTHY_VALUES: [&str; 10] = [
         "true", "t", "1", "yes", "y", "ok", "enable", "enabled", "active", "on",
     ];
-    TRUTHY_VALUES.iter().any(|&v| v == &s.trim().to_lowercase())
+    let cleaned = s.trim().to_lowercase();
+    TRUTHY_VALUES.iter().any(|&v| v == &cleaned)
 }
 
 pub fn to_vec<T: FromStr>(s: &str) -> Result<Vec<T>, &'static str>
@@ -30,8 +32,25 @@ where
     Ok(out)
 }
 
+pub fn to_hashmap<T: FromStr>(s: &str) -> Result<HashMap<String, T>, &'static str>
+where
+    <T as FromStr>::Err: Debug,
+{
+    let s = format!("x = {}", s);
+    let out = s.parse::<toml::Value>().unwrap();
+    let out = out["x"]
+        .as_table()
+        .expect(format!("Failed to convert the input string to a hashmap: {}", s).as_str());
+    let out = out
+        .iter()
+        .map(|(k, v)| (k.clone(), v.to_string().parse().unwrap()))
+        .collect();
+
+    Ok(out)
+}
+
 pub fn to_datetime(s: &str) -> Result<Datetime, &'static str> {
-    s.parse().map_err(|err| "parse error")
+    s.parse().map_err(|_err| "parse error")
 }
 
 #[cfg(test)]

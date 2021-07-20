@@ -1,3 +1,9 @@
+![Crates.io](https://img.shields.io/crates/v/biodome)
+![GitHub branch checks state](https://img.shields.io/github/checks-status/cjrh/biodome-rs/main)
+![Coveralls](https://img.shields.io/coveralls/github/cjrh/biodome-rs)
+![Crates.io downloads](https://img.shields.io/crates/dv/biodome)
+![GitHub](https://img.shields.io/github/license/cjrh/biodome-rs)
+
 # biodome
 
 *Easier access to environment variables*

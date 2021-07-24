@@ -40,6 +40,34 @@
 //!   happen. An env var like this (bash) would
 //!   work: `export PORTS=[81, 82]`
 //!
+//! # A Callable
+//!
+//! A neat trick is to have your in-process environment
+//! variables get updated from a configuration server during
+//! the running of the application.
+//!
+//! For example, imagine that you have a configurable
+//! timeout, and every 60 seconds you update that env var
+//! from the server. Inside your application, you want to
+//! make use of those updates, but still take advantage of
+//! the automatic conversions that biodome provides. You
+//! could do that like this:
+//!
+//! ```ignore
+//! use biodome::biodome_callable;
+//!
+//! const TIMEOUT: fn() -> f64 = biodome_callable("TIMEOUT", 5.0f64);
+//!
+//! fn get_data() {
+//!   // Inside whereever you need it
+//!   let data = make_request("https://example.com/", TIMEOUT());  
+//!   // etc.
+//! }
+//! ```
+//! Unfortunately, if you're making a `const` you will
+//! have to provide the type of the callable since Rust
+//! does not do inference for const values.
+//!
 //! # Simple Types
 //!
 //! In the above example, the literal integer `10` is of type

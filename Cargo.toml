@@ -1,13 +1,12 @@
 [package]
 name = "biodome"
 version = "0.1.1"
-edition = "2018"
+edition = "2021"
 description = "Reading and parsing env vars with defaults and structured types"
 homepage = "https://github.com/cjrh/biodome-rs"
 repository = "https://github.com/cjrh/biodome-rs"
 authors = ["Caleb Hattingh <caleb.hattingh@gmail.com>"]
 readme = "README.md"
-licence = "MIT OR Apache-2.0"
 license-file = "LICENSE"
 keywords = ["env", "environment-variable"]
 include = [

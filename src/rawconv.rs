@@ -13,7 +13,7 @@ pub fn to_bool(s: &str) -> bool {
         "true", "t", "1", "yes", "y", "ok", "enable", "enabled", "active", "on",
     ];
     let cleaned = s.trim().to_lowercase();
-    TRUTHY_VALUES.iter().any(|&v| v == &cleaned)
+    TRUTHY_VALUES.iter().any(|&v| v == cleaned)
 }
 
 pub fn to_vec<T: FromStr>(s: &str) -> Result<Vec<T>, &'static str>

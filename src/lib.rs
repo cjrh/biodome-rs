@@ -156,9 +156,9 @@ use std::env;
 use std::fmt::Debug;
 use std::str::FromStr;
 
-pub trait TryFromEnv: Sized {
+pub trait TryFromEnv<T>: Sized {
     type Error;
-    fn try_from_env(value: &str) -> Result<Self, Self::Error>;
+    fn try_from_env(value: &str) -> Result<T, Self::Error>;
 }
 
 pub trait TryIntoEnv<T>: Sized {
@@ -166,25 +166,15 @@ pub trait TryIntoEnv<T>: Sized {
     fn try_into_env(&self) -> Result<T, Self::Error>;
 }
 
-// How the heck to make this work??
-// impl<T: FromStr> TryFromEnv<String> for T {
-//     type Error = &'static str;
-//
-//     fn try_from_env(value: String) -> Result<Self, Self::Error> {
-//         value.v.parse().map_err(|err| "parse error")
-//     }
-// }
+impl TryFromEnv<String> for &'static str {
+    type Error = &'static str;
 
-// How the heck to make this work??
-// impl TryFromEnv for &str {
-//     type Error = &'static str;
-//
-//     fn try_from_env(value: &str) -> Result<Self, Self::Error> {
-//         Ok(value)
-//     }
-// }
+    fn try_from_env(value: &str) -> Result<String, Self::Error> {
+        Ok(value.to_string())
+    }
+}
 
-impl TryFromEnv for String {
+impl TryFromEnv<Self> for String {
     type Error = &'static str;
 
     fn try_from_env(value: &str) -> Result<Self, Self::Error> {
@@ -192,7 +182,7 @@ impl TryFromEnv for String {
     }
 }
 
-impl TryFromEnv for bool {
+impl TryFromEnv<Self> for bool {
     type Error = &'static str;
 
     fn try_from_env(value: &str) -> Result<Self, Self::Error> {
@@ -201,7 +191,7 @@ impl TryFromEnv for bool {
     }
 }
 
-impl TryFromEnv for usize {
+impl TryFromEnv<Self> for usize {
     type Error = &'static str;
 
     fn try_from_env(value: &str) -> Result<Self, Self::Error> {
@@ -210,7 +200,7 @@ impl TryFromEnv for usize {
     }
 }
 
-impl TryFromEnv for i8 {
+impl TryFromEnv<Self> for i8 {
     type Error = &'static str;
 
     fn try_from_env(value: &str) -> Result<Self, Self::Error> {
@@ -218,7 +208,7 @@ impl TryFromEnv for i8 {
     }
 }
 
-impl TryFromEnv for u8 {
+impl TryFromEnv<Self> for u8 {
     type Error = &'static str;
 
     fn try_from_env(value: &str) -> Result<Self, Self::Error> {
@@ -226,7 +216,7 @@ impl TryFromEnv for u8 {
     }
 }
 
-impl TryFromEnv for i16 {
+impl TryFromEnv<Self> for i16 {
     type Error = &'static str;
 
     fn try_from_env(value: &str) -> Result<Self, Self::Error> {
@@ -234,7 +224,7 @@ impl TryFromEnv for i16 {
     }
 }
 
-impl TryFromEnv for u16 {
+impl TryFromEnv<Self> for u16 {
     type Error = &'static str;
 
     fn try_from_env(value: &str) -> Result<Self, Self::Error> {
@@ -242,7 +232,7 @@ impl TryFromEnv for u16 {
     }
 }
 
-impl TryFromEnv for i32 {
+impl TryFromEnv<Self> for i32 {
     type Error = &'static str;
 
     fn try_from_env(value: &str) -> Result<Self, Self::Error> {
@@ -250,7 +240,7 @@ impl TryFromEnv for i32 {
     }
 }
 
-impl TryFromEnv for i64 {
+impl TryFromEnv<Self> for i64 {
     type Error = &'static str;
 
     fn try_from_env(value: &str) -> Result<Self, Self::Error> {
@@ -258,7 +248,7 @@ impl TryFromEnv for i64 {
     }
 }
 
-impl TryFromEnv for u32 {
+impl TryFromEnv<Self> for u32 {
     type Error = &'static str;
 
     fn try_from_env(value: &str) -> Result<Self, Self::Error> {
@@ -266,7 +256,7 @@ impl TryFromEnv for u32 {
     }
 }
 
-impl TryFromEnv for u64 {
+impl TryFromEnv<Self> for u64 {
     type Error = &'static str;
 
     fn try_from_env(value: &str) -> Result<Self, Self::Error> {
@@ -274,7 +264,7 @@ impl TryFromEnv for u64 {
     }
 }
 
-impl TryFromEnv for f32 {
+impl TryFromEnv<Self> for f32 {
     type Error = &'static str;
 
     fn try_from_env(value: &str) -> Result<Self, Self::Error> {
@@ -282,7 +272,7 @@ impl TryFromEnv for f32 {
     }
 }
 
-impl TryFromEnv for f64 {
+impl TryFromEnv<Self> for f64 {
     type Error = &'static str;
 
     fn try_from_env(value: &str) -> Result<Self, Self::Error> {
@@ -290,25 +280,25 @@ impl TryFromEnv for f64 {
     }
 }
 
-impl<T: FromStr + Debug> TryFromEnv for Vec<T>
+impl<T: FromStr + Debug> TryFromEnv<Self> for Vec<T>
 where
     <T as FromStr>::Err: Debug,
 {
     type Error = &'static str;
 
     fn try_from_env(value: &str) -> Result<Self, Self::Error> {
-        rawconv::to_vec(&value)
+        rawconv::to_vec(value)
     }
 }
 
-impl<T: FromStr + Debug> TryFromEnv for HashMap<String, T>
+impl<T: FromStr + Debug> TryFromEnv<Self> for HashMap<String, T>
 where
     <T as FromStr>::Err: Debug,
 {
     type Error = &'static str;
 
     fn try_from_env(value: &str) -> Result<Self, Self::Error> {
-        rawconv::to_hashmap(&value)
+        rawconv::to_hashmap(value)
     }
 }
 
@@ -316,21 +306,24 @@ where
 /// var has not been set, "default" will be used. If the env
 /// var (or the default value) fail to parse correctly to
 /// type T, panic.
-pub fn biodome<T: TryFromEnv>(key: &str, default: T) -> T
+pub fn biodome<U: From<T>, T: TryFromEnv<U>>(key: &str, default: T) -> U
 where
-    <T as TryFromEnv>::Error: std::fmt::Debug,
+    <T as TryFromEnv<U>>::Error: std::fmt::Debug,
 {
     let opt = env::var(key).ok();
     if let Some(v) = opt {
         T::try_from_env(&v).expect("Failed to parse")
     } else {
-        default
+        default.into()
     }
 }
 
-pub fn biodome_callable<T: TryFromEnv + Copy>(key: &str, default: T) -> impl Fn() -> T
+pub fn biodome_callable<U: From<T>, T: TryFromEnv<U> + Copy>(
+    key: &str,
+    default: T,
+) -> impl Fn() -> U
 where
-    <T as TryFromEnv>::Error: std::fmt::Debug,
+    <T as TryFromEnv<U>>::Error: std::fmt::Debug,
 {
     let key = key.to_string();
     move || {
@@ -338,7 +331,7 @@ where
         if let Some(v) = opt {
             T::try_from_env(&v).expect("Failed to parse")
         } else {
-            default
+            default.into()
         }
     }
 }
@@ -400,6 +393,7 @@ mod tests {
             DELAY: f32,
             PRECISON: f64,
             LOG_LEVEL: String,
+            OTHER_LOG_LEVEL: String,
         }
 
         impl Default for Settings {
@@ -408,7 +402,8 @@ mod tests {
                     NUM_THREADS: biodome("NUM_THREADS", 8),
                     DELAY: biodome("DELAY", 1.23),
                     PRECISON: biodome("PRECISON", 1.23_f64),
-                    LOG_LEVEL: biodome("LOG_LEVEL", "info".to_string()),
+                    LOG_LEVEL: biodome("LOG_LEVEL", "info"),
+                    OTHER_LOG_LEVEL: biodome("LOG_LEVEL", "info".to_string()),
                 }
             }
         }
@@ -418,6 +413,7 @@ mod tests {
         assert!((settings.DELAY - 1.23).abs() < 1e-8);
         assert!((settings.PRECISON - 1.23).abs() < 1e-8);
         assert_eq!(settings.LOG_LEVEL, "info");
+        assert_eq!(settings.OTHER_LOG_LEVEL, "info");
     }
 
     #[test]
